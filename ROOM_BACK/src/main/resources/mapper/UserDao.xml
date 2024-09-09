@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.room_back.Dao.UserDao">
+
+
+    <!-- 查询用户的每日学习时间 -->
+    <select id="findDailyStudyTimes" resultType="com.example.room_back.Entity.DailyChecks" parameterType="map">
+        SELECT
+            MAX(check_id) AS checkId, check_Date as checkDate,  SUM(study_time) AS studyTime, user_id as userId
+        FROM
+            daily_checks
+        WHERE
+            user_id = #{userId}
+          AND check_date BETWEEN #{startDate} AND #{endDate}
+        GROUP BY
+            check_date;
+    </select>
+
+    <!-- 查询用户尚未达成的学习目标 -->
+    <select id="findPendingStudyGoals" resultType="com.example.room_back.Entity.StudyGoals" parameterType="int">
+        SELECT goal_id as goalId, user_id as userId, description,target_date as targetDate
+        FROM study_goals
+        WHERE user_id = #{userId}
+          AND target_date > CURRENT_DATE()
+    </select>
+    <!-- 根据uid查询用户-->
+    <select id="findUserById" resultType="com.example.room_back.Entity.User" parameterType="int">
+        SELECT *
+        FROM user_table
+        WHERE uid = #{uid}
+    </select>
+    <!-- 注册用户 -->
+    <insert id="insertUser" parameterType="com.example.room_back.Entity.User" keyProperty="uid">
+        INSERT INTO user_table (userName, password, email)
+        VALUES (#{userName}, #{password}, #{email});
+    </insert>
+    <!-- 通过用户名查询用户 -->
+    <select id="findUserByUserName" resultType="com.example.room_back.Entity.User" parameterType="String">
+        SELECT uid, userName, password, email, picture, phoneNumber
+        FROM user_table
+        WHERE userName = #{userName}
+    </select>
+    
+</mapper>

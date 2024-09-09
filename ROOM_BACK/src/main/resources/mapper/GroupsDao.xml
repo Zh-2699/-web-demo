@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.room_back.Dao.GroupsDao">
+
+    <resultMap id="groupsResultMap" type="com.example.room_back.Entity.Groups">
+        <result column="group_id" property="groupId"/>
+        <result column="group_name" property="groupName"/>
+        <result column="create_by" property="createBy"/>
+
+    </resultMap>
+    <resultMap id="usersResultMap" type="com.example.room_back.Entity.User">
+        <result column="create_by" property="createBy"/>
+    </resultMap>
+    <!-- 查询特定群组的所有成员 -->
+    <select id="findAllGroupMembers" resultMap="usersResultMap" parameterType="int">
+        SELECT u.uid, u.userName, u.email, g.create_by
+        FROM user_table u
+                 JOIN group_member gm ON u.uid = gm.user_id
+                 JOIN `groups` g ON gm.group_id = g.group_id
+        WHERE gm.group_id = #{groupId}
+    </select>
+
+    <!-- 查询用户参与的所有群组 -->
+    <select id="findAllGroupsByUser" resultMap="groupsResultMap" parameterType="int">
+        SELECT group_member.group_id, groups.group_name, `groups`.create_by
+        FROM
+            group_member
+                JOIN
+            `groups` ON group_member.group_id = `groups`.group_id
+        WHERE
+            group_member.user_id = #{userId};
+    </select>
+
+
+</mapper>
+

@@ -1,0 +1,51 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.room_back.Dao.FriendDao">
+
+    <!-- resultMap 定义 -->
+    <resultMap id="FriendshipResultMap" type="com.example.room_back.Entity.User">
+        <!-- 在这里定义具体的属性映射关系，例如 -->
+        <result property="userId1" column="user_id1"/>
+        <result property="userId2" column="user_id2"/>
+        <result property="status" column="status"/>
+        <!-- 更多字段根据实际数据库设计添加 -->
+    </resultMap>
+
+    <!-- 查询用户的全部好友 -->
+    <select id="findAllFriends" resultMap="FriendshipResultMap">
+        SELECT uid, userName, email, picture, phoneNumber
+        FROM user_table
+        WHERE uid IN (
+            SELECT
+                CASE
+                    WHEN user_id1 = #{userId} THEN user_id2
+                    ELSE user_id1
+                    END AS friend_id
+            FROM
+                Friendships
+            WHERE
+                (user_id1 = #{userId} OR user_id2 = #{userId})
+              AND status = 'accepted'
+        );
+    </select>
+
+    <!-- 查询用户收到的未处理的好友请求 -->
+    <select id="findPendingFriendRequests" resultMap="FriendshipResultMap">
+        SELECT uid, userName, email, picture, phoneNumber
+        FROM user_table
+        WHERE uid IN (
+            SELECT
+                user_table.uid
+            FROM
+                Friendships
+                    JOIN
+                user_table ON Friendships.user_id1 = user_table.uid
+            WHERE
+                Friendships.user_id2 = #{userId}
+              AND Friendships.status = 'pending'
+        );
+    </select>
+
+    <!-- 添加好友 -->
+
+
+</mapper>

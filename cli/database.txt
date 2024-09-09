@@ -1,0 +1,45 @@
+
+
+数据库表的设计
+用户表 (Users)
+user_id (INT, 主键, 自增)
+username (VARCHAR)
+password (VARCHAR) — 存储加密后的密码
+email (VARCHAR)
+phone_number (VARCHAR) — 可选
+
+好友关系表 (Friendships)
+friendship_id (INT, 主键, 自增)
+user_id1 (INT, 外键, 指向 Users)
+user_id2 (INT, 外键, 指向 Users)
+status (ENUM('pending', 'accepted')) — 包括等待接受和已接受两种状态
+created_at (TIMESTAMP)
+
+群组表 (Groups)
+group_id (INT, 主键, 自增)
+group_name (VARCHAR)
+created_by (INT, 外键, 指向 Users)
+
+群组成员表 (Group_Members)
+member_id (INT, 主键, 自增)
+group_id (INT, 外键, 指向 Groups)
+user_id (INT, 外键, 指向 Users)
+joined_at (TIMESTAMP)
+
+打卡记录表 (Daily_Checks)
+check_id (INT, 主键, 自增)
+user_id (INT, 外键, 指向 Users)
+check_date (DATE)
+study_time (INT) — 存储学习时间，例如分钟数
+
+学习内容表 (Study_Contents)
+content_id (INT, 主键, 自增)
+user_id (INT, 外键, 指向 Users)
+content (TEXT)
+created_at (TIMESTAMP)
+
+学习目标表 (Study_Goals)
+goal_id (INT, 主键, 自增)
+user_id (INT, 外键, 指向 Users)
+description (TEXT)
+target_date (DATE)
